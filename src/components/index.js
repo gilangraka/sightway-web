@@ -8,6 +8,7 @@ import DocsComponents from './DocsComponents'
 import DocsIcons from './DocsIcons'
 import DocsLink from './DocsLink'
 import DocsExample from './DocsExample'
+import PaginatedTable from './PaginatedTable'
 
 export {
   AppBreadcrumb,
@@ -18,6 +19,7 @@ export {
   AppSidebar,
   DocsComponents,
   DocsIcons,
+  PaginatedTable,
   DocsLink,
   DocsExample,
 }
