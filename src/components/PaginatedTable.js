@@ -3,7 +3,7 @@ import { CTable } from '@coreui/react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '../core/axiosInstance'
 
-const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) => {
+const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true, reload = false }) => {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -27,19 +27,17 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) 
         params: {
           page,
           q: getQueryParam('q') || '',
-          is_used: getQueryParam('is_used') || undefined,
         },
       })
-      const itemsWithNumber = (res.data.data || []).map((item, index) => ({
+
+      const items = res.data.data || []
+
+      const numberedItems = items.map((item, index) => ({
         ...item,
         nomor: (page - 1) * perPage + index + 1,
-        is_used: (
-          <span className={item.is_used ? 'text-black' : 'text-success'}>
-            {item.is_used ? 'Belum Digunakan' : 'Sudah Digunakan'}
-          </span>
-        ),
       }))
-      setData(itemsWithNumber)
+
+      setData(numberedItems)
       setTotalPages(res.data.last_page || 1)
     } catch (err) {
       setError('Gagal memuat data')
@@ -56,6 +54,12 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) 
   useEffect(() => {
     fetchData(currentPage)
   }, [currentPage, location.search, endpoint])
+
+  // ✅ Re-fetch data saat reload berubah
+  useEffect(() => {
+    const page = parseInt(getQueryParam('page')) || 1
+    fetchData(page)
+  }, [reload])
 
   const handlePageChange = (page) => {
     if (typeof page === 'number' && page >= 1 && page <= totalPages) {
@@ -81,9 +85,10 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) 
     return pages
   }
 
+  const extendedColumns = [{ key: 'nomor', label: 'No' }, ...columns]
+
   return (
     <div>
-      {/* Optional Search Form */}
       {showSearch && (
         <form
           className="mb-3"
@@ -109,16 +114,32 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) 
         </form>
       )}
 
-      {/* Table and Pagination */}
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p className="text-danger">{error}</p>
       ) : (
         <>
-          <CTable bordered columns={columns} items={data} className="table-spaced" />
+          <CTable bordered className="table-spaced">
+            <thead>
+              <tr>
+                {extendedColumns.map((col, idx) => (
+                  <th key={idx}>{col.label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {extendedColumns.map((col, colIndex) => (
+                    <td key={colIndex}>{col.render ? col.render(row, rowIndex) : row[col.key]}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </CTable>
+
           <ul className="pagination justify-content-end mt-4">
-            {/* Previous */}
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button
                 className="page-link custom-page-link"
@@ -127,8 +148,6 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) 
                 &lt;
               </button>
             </li>
-
-            {/* Pages */}
             {getPaginationItems().map((item, idx) => (
               <li
                 key={idx}
@@ -143,13 +162,10 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true }) 
                 </button>
               </li>
             ))}
-
-            {/* Next */}
-            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-              <button
-                className="page-link custom-page-link"
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
+            <li
+              className={`page-item custom-page-link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+              <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>
                 &gt;
               </button>
             </li>
