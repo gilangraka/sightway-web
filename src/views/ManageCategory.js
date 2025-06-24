@@ -1,37 +1,30 @@
 import { CButton, CCard, CCardBody } from '@coreui/react'
 import { PaginatedTable } from '../components'
-import React, { useState } from 'react'
-import CategoryModal from '../components/modals/CategoryModal'
-import axiosInstance from '../core/axiosInstance'
-import { useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import CrudModal from '../components/modals/CrudModal'
+import EditButton from '../components/buttons/EditButton'
+import DeleteButton from '../components/buttons/DeleteButton'
 
 const ManageCategory = () => {
   const [modalVisible, setModalVisible] = useState(false)
-  const [editId, setEditId] = useState(null)
+  const [modalMode, setModalMode] = useState('store') // 'store', 'edit', 'delete'
+  const [selectedId, setSelectedId] = useState(null)
   const [reload, setReload] = useState(false)
 
-  const handleAdd = () => {
-    setEditId(null)
+  const openModal = (mode, id = null) => {
+    setModalMode(mode)
+    setSelectedId(id)
     setModalVisible(true)
   }
 
-  const location = useLocation()
+  const handleAdd = () => openModal('store')
+  const handleEdit = (id) => openModal('edit', id)
+  const handleDelete = (id) => openModal('delete', id)
 
-  const getPageFromUrl = () => {
-    const params = new URLSearchParams(location.search)
-    const page = parseInt(params.get('page')) || 1
-    return page
-  }
-
-  const handleEdit = (id) => {
-    setEditId(id)
-    setModalVisible(true)
-  }
-
-  const handleSuccess = (messageSuccess) => {
+  const handleSuccess = (message) => {
     setModalVisible(false)
-    setEditId(null)
-    console.log(messageSuccess)
+    setSelectedId(null)
+    console.log(message)
     setReload((prev) => !prev)
   }
 
@@ -42,14 +35,17 @@ const ManageCategory = () => {
       key: 'actions',
       label: 'Aksi',
       render: (item) => (
-        <CButton size="sm" color="warning" onClick={() => handleEdit(item.id)}>
-          Edit
-        </CButton>
+        <div className="d-flex align-items-center gap-2">
+          <EditButton onClick={() => handleEdit(item.id)} />
+          <DeleteButton onClick={() => handleDelete(item.id)} />
+        </div>
       ),
     },
   ]
 
-  const endpoint = '/dashboard/manage-category/'
+  const endpoint = '/dashboard/manage-category'
+  const section = 'Category'
+  const fields = [{ name: 'name', label: 'Nama Category', type: 'text' }]
 
   return (
     <>
@@ -66,17 +62,30 @@ const ManageCategory = () => {
         </CCardBody>
       </CCard>
 
-      <CategoryModal
+      <CrudModal
         visible={modalVisible}
         onClose={() => {
           setModalVisible(false)
-          setEditId(null)
+          setSelectedId(null)
         }}
-        mode={editId ? 'edit' : 'store'}
-        id={editId}
-        onSuccess={() =>
-          handleSuccess(editId ? 'Kategori berhasil diupdate' : 'Kategori berhasil ditambahkan')
-        }
+        mode={modalMode}
+        id={selectedId}
+        endpoint={endpoint}
+        fields={fields}
+        titleMap={{
+          store: `Tambah ${section}`,
+          edit: `Edit ${section}`,
+          delete: `Hapus ${section}`,
+        }}
+        onSuccess={() => {
+          const message =
+            modalMode === 'edit'
+              ? `${section} berhasil diupdate`
+              : modalMode === 'delete'
+                ? `${section} berhasil dihapus`
+                : `${section} berhasil ditambahkan`
+          handleSuccess(message)
+        }}
       />
     </>
   )

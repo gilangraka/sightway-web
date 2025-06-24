@@ -18,11 +18,11 @@ const CenteredModal = ({ visible, onClose, title, children, onSave, loading = fa
       <CModalBody>{children}</CModalBody>
 
       <CModalFooter>
-        <CButton color="secondary" onClick={onClose} disabled={loading}>
+        <CButton color="white" onClick={onClose} disabled={loading}>
           Close
         </CButton>
         <CButton color="primary" onClick={onSave} disabled={loading}>
-          {loading ? 'Saving...' : 'Save changes'}
+          {loading ? 'Saving...' : 'Confirm'}
         </CButton>
       </CModalFooter>
     </CModal>

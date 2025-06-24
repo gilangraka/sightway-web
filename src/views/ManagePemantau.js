@@ -14,7 +14,6 @@ const ManagePemantau = () => {
       <CCardBody className="d-flex flex-column gap-4">
         <div className="d-flex justify-content-between align-items-center">
           <h4>Manage Pemantau</h4>
-          <button className="btn btn-primary p-2 px-3 fw-medium">Tambah Pemantau</button>
         </div>
 
         <PaginatedTable columns={columns} endpoint={endpoint} />
