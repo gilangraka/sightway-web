@@ -5,6 +5,7 @@ import ManagePemantau from './ManagePemantau'
 import ManagePenyandang from './ManagePenyandang'
 import ManageTag from './ManageTag'
 import Dashboard from './Dashboard'
+import Login from './Login'
 
 export {
   ManageAdmin,
@@ -14,4 +15,5 @@ export {
   ManagePemantau,
   ManagePenyandang,
   Dashboard,
+  Login,
 }

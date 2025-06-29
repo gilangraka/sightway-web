@@ -118,8 +118,6 @@ const ManageBlindstick = () => {
         }}
         onSuccess={handleSuccess}
       />
-
-      <ShowBlin
     </>
   )
 }
