@@ -1,11 +1,20 @@
 import { CCard, CCardBody } from '@coreui/react'
 import { PaginatedTable } from '../components'
+import ShowButton from '../components/buttons/ShowButton'
 
 const ManagePemantau = () => {
   const columns = [
-    { key: 'nomor', label: 'No.', _props: { scope: 'col' } },
     { key: 'email', label: 'Email' },
     { key: 'name', label: 'Nama' },
+    {
+      key: 'actions',
+      label: 'Aksi',
+      render: (item) => (
+        <div className="d-flex align-items-center gap-2">
+          <ShowButton />
+        </div>
+      ),
+    },
   ]
   const endpoint = '/dashboard/manage-pemantau/'
 

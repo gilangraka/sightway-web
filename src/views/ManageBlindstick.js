@@ -5,12 +5,14 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import CrudModal from '../components/modals/CrudModal'
 import EditButton from '../components/buttons/EditButton'
 import DeleteButton from '../components/buttons/DeleteButton'
+import ShowButton from '../components/buttons/ShowButton'
 
 const ManageBlindstick = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [modalMode, setModalMode] = useState('store')
   const [selectedId, setSelectedId] = useState(null)
   const [reload, setReload] = useState(false)
+  const [modalShowVisible, setModalShowVisible] = useState(false)
 
   const openModal = (mode, id = null) => {
     setModalMode(mode)
@@ -41,6 +43,7 @@ const ManageBlindstick = () => {
       label: 'Aksi',
       render: (item) => (
         <div className="d-flex align-items-center gap-2">
+          <ShowButton />
           <EditButton onClick={() => handleEdit(item.id)} />
           <DeleteButton onClick={() => handleDelete(item.id)} />
         </div>
@@ -115,6 +118,8 @@ const ManageBlindstick = () => {
         }}
         onSuccess={handleSuccess}
       />
+
+      <ShowBlin
     </>
   )
 }

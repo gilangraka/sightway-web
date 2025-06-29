@@ -3,7 +3,6 @@ import { PaginatedTable } from '../components'
 
 const ManagePenyandang = () => {
   const columns = [
-    { key: 'nomor', label: 'No.', _props: { scope: 'col' } },
     { key: 'email', label: 'Email' },
     { key: 'name', label: 'Nama' },
   ]
