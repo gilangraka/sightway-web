@@ -10,6 +10,9 @@ import DocsLink from './DocsLink'
 import DocsExample from './DocsExample'
 import PaginatedTable from './PaginatedTable'
 import CenteredModal from './CenteredModal'
+import ToastManager from './ToastManager'
+import StatCard from './StatCard'
+import QuickLink from './QuickLink'
 
 export {
   AppBreadcrumb,
@@ -24,4 +27,7 @@ export {
   DocsLink,
   DocsExample,
   CenteredModal,
+  ToastManager,
+  StatCard,
+  QuickLink,
 }

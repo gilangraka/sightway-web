@@ -7,6 +7,8 @@ import './scss/style.scss'
 import './scss/examples.scss'
 
 import DefaultLayout from './layout/DefaultLayout'
+import ToastManager from './components/ToastManager' // ⬅ import ToastManager
+
 const Login = React.lazy(() => import('./views/Login'))
 
 import ProtectedRoute from './ProtectedRoute'
@@ -31,34 +33,36 @@ const App = () => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <HashRouter>
-      <Suspense
-        fallback={
-          <div className="pt-3 text-center">
-            <CSpinner color="primary" variant="grow" />
-          </div>
-        }
-      >
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="*"
-            element={
-              <ProtectedRoute>
-                <DefaultLayout />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Suspense>
-    </HashRouter>
+    <ToastManager>
+      <HashRouter>
+        <Suspense
+          fallback={
+            <div className="pt-3 text-center">
+              <CSpinner color="primary" variant="grow" />
+            </div>
+          }
+        >
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <ProtectedRoute>
+                  <DefaultLayout />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Suspense>
+      </HashRouter>
+    </ToastManager>
   )
 }
 

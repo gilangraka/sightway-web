@@ -16,12 +16,14 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axiosInstance from '../core/axiosInstance'
+import { useToast } from '../components/ToastManager'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState([])
   const navigate = useNavigate()
+  const Toast = useToast()
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -31,25 +33,23 @@ const Login = () => {
       const response = await axiosInstance.post('/dashboard/auth/login', data)
 
       localStorage.setItem('token', response.data.access_token)
-
       localStorage.setItem('user', JSON.stringify(response.data.user))
-
       const roleNames = response.data.user.roles.map((role) => role.name)
       localStorage.setItem('roles', JSON.stringify(roleNames))
 
       navigate('/dashboard')
     } catch (err) {
+      let messages = ['Login failed']
       if (err.response && err.response.data && err.response.data.detail) {
         const detail = err.response.data.detail
         if (Array.isArray(detail)) {
-          const messages = detail.map((item) => item.msg)
-          setError(messages)
+          messages = detail.map((item) => item.msg)
         } else {
-          setError([detail])
+          messages = [detail]
         }
-      } else {
-        setError(['Login failed'])
       }
+      setError(messages)
+      messages.forEach((msg) => Toast.error(msg))
     }
   }
 
@@ -64,23 +64,6 @@ const Login = () => {
                   <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
-
-                    {error.length > 0 && (
-                      <div
-                        className="p-2 mb-4"
-                        style={{
-                          backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                          borderRadius: '4px',
-                        }}
-                      >
-                        <ul className="m-0 text-danger">
-                          {error.map((msg, idx) => (
-                            <li key={idx}>{msg}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />

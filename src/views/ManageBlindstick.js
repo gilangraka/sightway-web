@@ -6,6 +6,7 @@ import CrudModal from '../components/modals/CrudModal'
 import EditButton from '../components/buttons/EditButton'
 import DeleteButton from '../components/buttons/DeleteButton'
 import ShowButton from '../components/buttons/ShowButton'
+import { useToast } from '../components/ToastManager'
 
 const ManageBlindstick = () => {
   const [modalVisible, setModalVisible] = useState(false)
@@ -13,6 +14,7 @@ const ManageBlindstick = () => {
   const [selectedId, setSelectedId] = useState(null)
   const [reload, setReload] = useState(false)
   const [modalShowVisible, setModalShowVisible] = useState(false)
+  const Toast = useToast()
 
   const openModal = (mode, id = null) => {
     setModalMode(mode)
@@ -27,10 +29,12 @@ const ManageBlindstick = () => {
   const handleSuccess = (message) => {
     setModalVisible(false)
     setSelectedId(null)
-    console.log(message)
+    Toast.success(message)
     setReload((prev) => !prev)
   }
-
+  const handleError = (message) => {
+    Toast.error(message)
+  }
   const columns = [
     { key: 'mac_address', label: 'Mac Address' },
     {
@@ -117,6 +121,7 @@ const ManageBlindstick = () => {
           delete: `Hapus ${section}`,
         }}
         onSuccess={handleSuccess}
+        onError={handleError}
       />
     </>
   )

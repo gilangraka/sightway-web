@@ -17,6 +17,7 @@ const CrudModal = ({
   },
   endpoint,
   fields = [],
+  onError,
 }) => {
   const isEdit = mode === 'edit'
   const isDelete = mode === 'delete'
@@ -56,7 +57,6 @@ const CrudModal = ({
 
     let api
     if (isReset) {
-      // Reset password otomatis ke 'password'
       api = axiosInstance.post(`${endpoint}/${id}/reset_password`)
     } else if (isDelete) {
       api = axiosInstance.delete(`${endpoint}/${id}`)
@@ -71,7 +71,11 @@ const CrudModal = ({
         onSuccess?.()
         onClose()
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        const errorMsg = err?.response?.data?.detail || 'Terjadi kesalahan. Coba lagi.'
+        onError?.(errorMsg)
+      })
       .finally(() => setSubmitting(false))
   }
 

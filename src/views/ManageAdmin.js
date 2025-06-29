@@ -5,12 +5,14 @@ import CrudModal from '../components/modals/CrudModal'
 import EditButton from '../components/buttons/EditButton'
 import DeleteButton from '../components/buttons/DeleteButton'
 import ResetPasswordButton from '../components/buttons/ResetPasswordButton'
+import { useToast } from '../components/ToastManager'
 
 const ManageAdmin = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [modalMode, setModalMode] = useState('store') // 'store', 'edit', 'delete'
   const [selectedId, setSelectedId] = useState(null)
   const [reload, setReload] = useState(false)
+  const Toast = useToast()
 
   const openModal = (mode, id = null) => {
     setModalMode(mode)
@@ -25,10 +27,12 @@ const ManageAdmin = () => {
   const handleSuccess = (message) => {
     setModalVisible(false)
     setSelectedId(null)
-    console.log(message)
+    Toast.success(message)
     setReload((prev) => !prev)
   }
-
+  const handleError = (message) => {
+    Toast.error(message)
+  }
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
@@ -93,6 +97,7 @@ const ManageAdmin = () => {
                 : `${section} berhasil ditambahkan`
           handleSuccess(message)
         }}
+        onError={handleError}
       />
     </>
   )
