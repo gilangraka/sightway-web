@@ -31,6 +31,12 @@ const Login = () => {
       const response = await axiosInstance.post('/dashboard/auth/login', data)
 
       localStorage.setItem('token', response.data.access_token)
+
+      localStorage.setItem('user', JSON.stringify(response.data.user))
+
+      const roleNames = response.data.user.roles.map((role) => role.name)
+      localStorage.setItem('roles', JSON.stringify(roleNames))
+
       navigate('/dashboard')
     } catch (err) {
       if (err.response && err.response.data && err.response.data.detail) {
@@ -61,7 +67,7 @@ const Login = () => {
 
                     {error.length > 0 && (
                       <div
-                        className="p-2 mb-2"
+                        className="p-2 mb-4"
                         style={{
                           backgroundColor: 'rgba(220, 53, 69, 0.1)',
                           borderRadius: '4px',
