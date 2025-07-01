@@ -36,6 +36,9 @@ const CrudModal = ({
           .then((res) => {
             const data = {}
             fields.forEach((field) => {
+              // Untuk tipe file, Anda mungkin tidak ingin mengisi formData dengan string path file,
+              // melainkan mengosongkannya atau menanganinya secara terpisah.
+              // Untuk select, pastikan nilai yang diambil sesuai dengan salah satu opsi.
               data[field.name] = res.data[field.name] || ''
             })
             setFormData(data)
@@ -45,7 +48,8 @@ const CrudModal = ({
       } else {
         const initial = {}
         fields.forEach((field) => {
-          initial[field.name] = ''
+          // Untuk tipe file, nilai awal harus null atau objek File
+          initial[field.name] = field.type === 'file' ? null : ''
         })
         setFormData(initial)
       }
@@ -55,15 +59,37 @@ const CrudModal = ({
   const handleSubmit = () => {
     setSubmitting(true)
 
+    // Penting: Untuk file, Anda perlu menggunakan FormData API
+    const dataToSend = new FormData()
+    Object.keys(formData).forEach((key) => {
+      // Jika ada file yang dipilih, tambahkan ke FormData
+      if (fields.find((f) => f.name === key && f.type === 'file') && formData[key]) {
+        dataToSend.append(key, formData[key])
+      } else {
+        // Untuk semua field lainnya, termasuk select dan text
+        dataToSend.append(key, formData[key])
+      }
+    })
+
     let api
     if (isReset) {
       api = axiosInstance.post(`${endpoint}/${id}/reset_password`)
     } else if (isDelete) {
       api = axiosInstance.delete(`${endpoint}/${id}`)
     } else if (isEdit) {
-      api = axiosInstance.put(`${endpoint}/${id}`, formData)
+      // Untuk file, pastikan server dapat menangani multipart/form-data untuk PUT
+      api = axiosInstance.put(`${endpoint}/${id}`, dataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Penting untuk file uploads
+        },
+      })
     } else {
-      api = axiosInstance.post(endpoint, formData)
+      // Untuk file, pastikan server dapat menangani multipart/form-data untuk POST
+      api = axiosInstance.post(endpoint, dataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Penting untuk file uploads
+        },
+      })
     }
 
     api
@@ -77,6 +103,11 @@ const CrudModal = ({
         onError?.(errorMsg)
       })
       .finally(() => setSubmitting(false))
+  }
+
+  const handleFileChange = (e, name) => {
+    // Saat file dipilih, simpan objek File itu sendiri di state
+    setFormData((prev) => ({ ...prev, [name]: e.target.files[0] }))
   }
 
   return (
@@ -105,22 +136,52 @@ const CrudModal = ({
       ) : (
         // Form input biasa untuk create/edit
         <div>
-          {fields.map(({ name, label, type = 'text', placeholder }) => (
-            <div className="mb-3" key={name}>
-              <label htmlFor={name} className="form-label">
-                {label}
-              </label>
-              <input
-                type={type}
-                name={name}
-                id={name}
-                value={formData[name]}
-                placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
-                className="form-control"
-                onChange={(e) => setFormData((prev) => ({ ...prev, [name]: e.target.value }))}
-              />
-            </div>
-          ))}
+          {fields.map(
+            (
+              { name, label, type = 'text', placeholder, options }, // Tambahkan 'options'
+            ) => (
+              <div className="mb-3" key={name}>
+                <label htmlFor={name} className="form-label">
+                  {label}
+                </label>
+                {type === 'select' ? (
+                  <select
+                    name={name}
+                    id={name}
+                    value={formData[name]}
+                    className="form-select" // Gunakan form-select dari Bootstrap
+                    onChange={(e) => setFormData((prev) => ({ ...prev, [name]: e.target.value }))}
+                  >
+                    <option value="">Pilih {label}</option> {/* Opsi default */}
+                    {options &&
+                      options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                  </select>
+                ) : type === 'file' ? (
+                  <input
+                    type="file"
+                    name={name}
+                    id={name}
+                    className="form-control"
+                    onChange={(e) => handleFileChange(e, name)} // Gunakan handler terpisah
+                  />
+                ) : (
+                  <input
+                    type={type}
+                    name={name}
+                    id={name}
+                    value={formData[name]}
+                    placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
+                    className="form-control"
+                    onChange={(e) => setFormData((prev) => ({ ...prev, [name]: e.target.value }))}
+                  />
+                )}
+              </div>
+            ),
+          )}
         </div>
       )}
     </CenteredModal>
