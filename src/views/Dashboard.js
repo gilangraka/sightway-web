@@ -4,16 +4,8 @@ import { StatCard, QuickLink } from '../components'
 import { useState, useEffect } from 'react'
 import { useToast } from '../components/ToastManager'
 import axiosInstance from '../core/axiosInstance'
-
-const formatTimeAgo = (isoString) => {
-  const date = new Date(isoString)
-  const diff = Math.floor((Date.now() - date.getTime()) / 1000)
-  if (diff < 60) return 'baru saja'
-  if (diff < 3600) return `${Math.floor(diff / 60)} menit yang lalu`
-  if (diff < 86400) return `${Math.floor(diff / 3600)} jam yang lalu`
-  if (diff < 604800) return `${Math.floor(diff / 86400)} hari yang lalu`
-  return date.toLocaleDateString()
-}
+import CrudModal from '../components/modals/CrudModal'
+import formatTimeAgo from '../core/formatTimeAgo'
 
 const Dashboard = () => {
   const Toast = useToast()
@@ -22,6 +14,28 @@ const Dashboard = () => {
   const [totalTag, setTotalTag] = useState(0)
   const [totalUser, setTotalUser] = useState(0)
   const [logs, setLogs] = useState([])
+
+  const [modalVisible, setModalVisible] = useState(false)
+  const [modalMode, setModalMode] = useState('store')
+  const [selectedId, setSelectedId] = useState(null)
+  const [currentSection, setCurrentSection] = useState(null)
+
+  const crudConfigs = {
+    Category: {
+      endpoint: '/dashboard/manage-category',
+      fields: [{ name: 'name', label: 'Nama Category', type: 'text' }],
+    },
+    Tag: {
+      endpoint: '/dashboard/manage-tag',
+      fields: [{ name: 'name', label: 'Nama Tag', type: 'text' }],
+    },
+  }
+  const openModal = (section, mode = 'store', id = null) => {
+    setCurrentSection(section)
+    setModalMode(mode)
+    setSelectedId(id)
+    setModalVisible(true)
+  }
 
   useEffect(() => {
     const getData = async () => {
@@ -91,6 +105,7 @@ const Dashboard = () => {
                     icon={cilList}
                     title="Tambah Kategori"
                     desc="Buat kategori untuk mengelompokkan konten"
+                    onClick={() => openModal('Category', 'store')}
                   />
                 </CCol>
                 <CCol xs={12}>
@@ -98,6 +113,7 @@ const Dashboard = () => {
                     icon={cilTag}
                     title="Tambah Tag"
                     desc="Buat tag untuk mempermudah pencarian"
+                    onClick={() => openModal('Tag', 'store')}
                   />
                 </CCol>
               </CRow>
@@ -105,6 +121,37 @@ const Dashboard = () => {
           </CCard>
         </CCol>
       </CRow>
+
+      <CrudModal
+        visible={modalVisible}
+        onClose={() => {
+          setModalVisible(false)
+          setSelectedId(null)
+          setCurrentSection(null)
+        }}
+        mode={modalMode}
+        id={selectedId}
+        endpoint={currentSection ? crudConfigs[currentSection]?.endpoint : ''}
+        fields={currentSection ? crudConfigs[currentSection]?.fields : []}
+        titleMap={{
+          store: currentSection ? `Tambah ${currentSection}` : '',
+          edit: currentSection ? `Edit ${currentSection}` : '',
+          delete: currentSection ? `Hapus ${currentSection}` : '',
+        }}
+        onSuccess={() => {
+          const msg =
+            modalMode === 'edit'
+              ? `${currentSection} berhasil diupdate`
+              : modalMode === 'delete'
+                ? `${currentSection} berhasil dihapus`
+                : `${currentSection} berhasil ditambahkan`
+          Toast.success(msg)
+          setModalVisible(false)
+          setSelectedId(null)
+          setCurrentSection(null)
+        }}
+        onError={(msg) => Toast.error(msg)}
+      />
     </div>
   )
 }

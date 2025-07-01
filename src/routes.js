@@ -7,6 +7,7 @@ const ManageAdmin = React.lazy(() => import('./views/ManageAdmin'))
 const ManagePemantau = React.lazy(() => import('./views/ManagePemantau'))
 const ManagePenyandang = React.lazy(() => import('./views/ManagePenyandang'))
 const ManageBlindstick = React.lazy(() => import('./views/ManageBlindstick'))
+const Profile = React.lazy(() => import('./views/Profile'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home', element: Dashboard },
@@ -18,7 +19,7 @@ const routes = [
   { path: '/manage-pemantau', name: 'Manage Pemantau', element: ManagePemantau },
   { path: '/manage-penyandang', name: 'Manage Penyandang', element: ManagePenyandang },
   { path: '/manage-blindstick', name: 'Manage Blindstick', element: ManageBlindstick },
-  { path: '/profile', name: 'Profile', element: Dashboard },
+  { path: '/profile', name: 'Profile', element: Profile },
 ]
 
 export default routes
