@@ -40,7 +40,7 @@ const ManageBlindstick = () => {
     {
       key: 'is_used',
       label: 'Status',
-      render: (row) => (row.is_used ? 'Belum Digunakan' : 'Sudah Digunakan'),
+      render: (row) => (row.is_used ? 'Sudah digunakan' : 'Belum digunakan'),
     },
     {
       key: 'actions',
@@ -57,7 +57,9 @@ const ManageBlindstick = () => {
 
   const endpoint = '/dashboard/manage-blindstick'
   const section = 'Blindstick'
-  const fields = [{ name: 'mac_address', label: 'MAC Address', type: 'text' }]
+  const fields = [
+    { name: 'blindstick.mac_address', form_name: 'blindstick', label: 'MAC Address', type: 'text' },
+  ]
 
   const location = useLocation()
   const navigate = useNavigate()
