@@ -1,5 +1,13 @@
 import React from 'react'
-import { CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, CButton } from '@coreui/react'
+import {
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CButton,
+  CSpinner,
+} from '@coreui/react'
 
 const CenteredModal = ({ visible, onClose, title, children, onSave, loading = false }) => {
   return (
@@ -22,7 +30,7 @@ const CenteredModal = ({ visible, onClose, title, children, onSave, loading = fa
           Close
         </CButton>
         <CButton color="primary" onClick={onSave} disabled={loading}>
-          {loading ? 'Saving...' : 'Confirm'}
+          {loading ? <CSpinner size="sm" /> : 'Confirm'}
         </CButton>
       </CModalFooter>
     </CModal>

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AppHistory = React.lazy(() => import('./views/Profile'))
+const AppHistory = React.lazy(() => import('./views/ManageAppHistory'))
 const Dashboard = React.lazy(() => import('./views/Dashboard'))
 const ManageCategory = React.lazy(() => import('./views/ManageCategory'))
 const ManageTag = React.lazy(() => import('./views/ManageTag'))

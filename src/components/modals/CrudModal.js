@@ -3,32 +3,10 @@ import { CSpinner } from '@coreui/react'
 import axiosInstance from '../../core/axiosInstance'
 import CenteredModal from '../CenteredModal'
 
-/**
- * Helper function to get a nested value from an object using a dot-notation path.
- * e.g., getNestedValue({ user: { name: 'John' } }, 'user.name') returns 'John'.
- * @param {object} obj The object to retrieve the value from.
- * @param {string} path The dot-notation path to the value.
- * @returns The value found at the path, or an empty string if not found.
- */
 const getNestedValue = (obj, path) => {
   return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : ''), obj)
 }
 
-/**
- * A reusable modal component for CRUD operations that handles complex data structures.
- * This version correctly builds a flat payload for the API from form state that uses dot-notation keys.
- *
- * @param {object} props - The component props.
- * @param {boolean} props.visible - Whether the modal is visible.
- * @param {function} props.onClose - Function to call when the modal is closed.
- * @param {string} [props.mode='store'] - The current mode ('store', 'edit', 'delete', 'resetPassword').
- * @param {string|number|null} [props.id=null] - The ID of the item for 'edit', 'delete', or 'resetPassword' modes.
- * @param {function} [props.onSuccess] - Callback function on successful submission.
- * @param {object} [props.titleMap] - A map of titles for each mode.
- * @param {string} props.endpoint - The API endpoint for the CRUD operations.
- * @param {Array<object>} [props.fields=[]] - An array of field configuration objects for the form.
- * @param {function} [props.onError] - Callback function on submission error.
- */
 const CrudModal = ({
   visible,
   onClose,
@@ -44,6 +22,9 @@ const CrudModal = ({
   endpoint,
   fields = [],
   onError,
+  customHandleChange,
+  customHandleSubmit,
+  isSubmit = false,
 }) => {
   const isEdit = mode === 'edit'
   const isDelete = mode === 'delete'
@@ -51,11 +32,9 @@ const CrudModal = ({
 
   const [formData, setFormData] = useState({})
   const [loading, setLoading] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const [submitting, setSubmitting] = useState(isSubmit)
 
-  // Effect to fetch data for edit/delete/reset mode or initialize form for store mode
   useEffect(() => {
-    // Reset form state when modal is closed
     if (!visible) {
       setFormData({})
       return
@@ -67,7 +46,6 @@ const CrudModal = ({
         .get(`${endpoint}/${id}`)
         .then((res) => {
           const data = {}
-          // Populate form data using dot-notation paths from the fields config
           fields.forEach((field) => {
             data[field.name] = getNestedValue(res.data, field.name)
           })
@@ -79,7 +57,6 @@ const CrudModal = ({
         })
         .finally(() => setLoading(false))
     } else {
-      // Initialize an empty form for 'store' mode
       const initial = {}
       fields.forEach((field) => {
         initial[field.name] = ''
@@ -88,33 +65,30 @@ const CrudModal = ({
     }
   }, [visible, isEdit, isDelete, isReset, id, fields, endpoint, onError])
 
-  /**
-   * Builds the payload for the API. It transforms the flat form state with
-   * dot-notation keys (e.g., { 'blindstick.mac_address': 'value' }) into
-   * a flat object with the final key (e.g., { mac_address: 'value' }),
-   * which matches the API's expectation.
-   * @param {object} flatObj - The form data state.
-   * @returns {object} A flat object ready to be sent to the API.
-   */
+  useEffect(() => {
+    setSubmitting(isSubmit)
+  }, [isSubmit])
+
   const buildPayload = (flatObj) => {
     const payload = {}
     Object.keys(flatObj).forEach((path) => {
       const keyParts = path.split('.')
-      const finalKey = keyParts[keyParts.length - 1] // e.g., 'mac_address' from 'blindstick.mac_address'
+      const finalKey = keyParts[keyParts.length - 1]
       payload[finalKey] = flatObj[path]
     })
     return payload
   }
 
-  // Handle form submission
-  const handleSubmit = () => {
-    setSubmitting(true)
+  const defaultHandleSubmit = async () => {
+    if ((isEdit || mode === 'store') && fields.some((f) => !formData[f.name])) {
+      onError?.('Semua field wajib diisi.')
+      return
+    }
 
+    setSubmitting(true)
     let api
-    // Build the payload only for modes that send data
     const payload = isEdit || mode === 'store' ? buildPayload(formData) : {}
 
-    // Determine the API call based on the mode
     if (isReset) {
       api = axiosInstance.post(`${endpoint}/${id}/reset_password`)
     } else if (isDelete) {
@@ -127,19 +101,26 @@ const CrudModal = ({
 
     api
       .then(() => {
-        onSuccess?.() // Trigger success callback
-        onClose() // Close the modal
+        onSuccess?.()
+        onClose()
       })
       .catch((err) => {
         console.error('Submission failed:', err)
         const errorMsg = err?.response?.data?.detail || 'Terjadi kesalahan. Coba lagi.'
-        onError?.(errorMsg) // Trigger error callback
+        onError?.(errorMsg)
       })
       .finally(() => setSubmitting(false))
   }
 
-  // Generic change handler for form inputs
-  const handleChange = (e) => {
+  const handleSubmit = () => {
+    if (customHandleSubmit) {
+      customHandleSubmit(formData, setSubmitting)
+    } else {
+      defaultHandleSubmit()
+    }
+  }
+
+  const defaultHandleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -159,17 +140,29 @@ const CrudModal = ({
           <CSpinner color="primary" />
         </div>
       ) : isDelete ? (
-        <p>Apakah Anda yakin ingin menghapus data ini?</p>
-      ) : isReset ? (
-        <p>
-          Apakah Anda yakin ingin me-reset password user{' '}
-          {/* The key in formData is the full path, so this remains correct */}
-          <strong>{formData['blindstick.mac_address'] || ''}</strong> ke <code>password</code>?
-        </p>
-      ) : (
-        // Render form fields for 'store' and 'edit' modes
         <div>
-          {fields.map(({ name, label, type = 'text', placeholder, options }) => (
+          <p>Apakah Anda yakin ingin menghapus data ini?</p>
+          {submitting && (
+            <div className="text-center mt-3">
+              <CSpinner color="danger" />
+            </div>
+          )}
+        </div>
+      ) : isReset ? (
+        <div>
+          <p>
+            Apakah Anda yakin ingin me-reset password user{' '}
+            <strong>{formData['blindstick.mac_address'] || ''}</strong> ke <code>password</code>?
+          </p>
+          {submitting && (
+            <div className="text-center mt-3">
+              <CSpinner color="warning" />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>
+          {fields.map(({ name, label, type = 'text', placeholder, options, accept }) => (
             <div className="mb-3" key={name}>
               <label htmlFor={name} className="form-label">
                 {label}
@@ -180,7 +173,13 @@ const CrudModal = ({
                   id={name}
                   value={formData[name] ?? ''}
                   className="form-select"
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    if (customHandleChange) {
+                      customHandleChange(e, setFormData)
+                    } else {
+                      defaultHandleChange(e)
+                    }
+                  }}
                 >
                   <option value="">Pilih {label}</option>
                   {options?.map((option) => (
@@ -194,10 +193,17 @@ const CrudModal = ({
                   type={type}
                   name={name}
                   id={name}
-                  value={formData[name] ?? ''}
+                  value={type === 'file' ? undefined : (formData[name] ?? '')}
                   placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
                   className="form-control"
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    if (customHandleChange) {
+                      customHandleChange(e, setFormData)
+                    } else {
+                      defaultHandleChange(e)
+                    }
+                  }}
+                  {...(type === 'file' ? { accept } : {})}
                 />
               )}
             </div>

@@ -6,6 +6,7 @@ import ManagePenyandang from './ManagePenyandang'
 import ManageTag from './ManageTag'
 import Dashboard from './Dashboard'
 import Login from './Login'
+import ManageAppHistory from './ManageAppHistory'
 
 export {
   ManageAdmin,
@@ -16,4 +17,5 @@ export {
   ManagePenyandang,
   Dashboard,
   Login,
+  ManageAppHistory,
 }
