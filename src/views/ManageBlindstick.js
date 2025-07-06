@@ -94,8 +94,8 @@ const ManageBlindstick = () => {
                 onChange={handleFilterChange}
               >
                 <option value="">Semua Status</option>
-                <option value="0">Sudah Digunakan</option>
-                <option value="1">Belum Digunakan</option>
+                <option value="1">Sudah Digunakan</option>
+                <option value="0">Belum Digunakan</option>
               </select>
               <CButton color="primary" className="p-2 px-3 fw-medium" onClick={handleAdd}>
                 Tambah Blindstick

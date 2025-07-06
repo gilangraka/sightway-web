@@ -3,6 +3,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilBlind,
   cilCog,
+  cilHistory,
   cilList,
   cilLowVision,
   cilMonitor,
@@ -87,6 +88,17 @@ const getNav = (roles = []) => {
       to: '/profile',
       icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
     },
+
+    ...(roles.includes('superadmin')
+      ? [
+          {
+            component: CNavItem,
+            name: 'Riwayat Aplikasi',
+            to: '/app-history',
+            icon: <CIcon icon={cilHistory} customClassName="nav-icon" />,
+          },
+        ]
+      : []),
   ]
 
   return nav

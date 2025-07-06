@@ -1,0 +1,6 @@
+<svg id="logomark-mono-svg" class="w-24 h-24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="12" fill="#ffffff"/>
+                  <path d="M 20 50 A 30 30 0 0 1 80 50" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+                  <path d="M 10 50 A 40 40 0 0 1 90 50" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="1, 10"/>
+                  <path d="M 30 50 A 20 20 0 0 1 70 50" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+                </svg>

@@ -27,9 +27,14 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
-      <CSidebarHeader className="border-bottom">
+      <CSidebarHeader className="border-bottom d-flex justify-content-center">
         <CSidebarBrand style={{ textDecoration: 'none', fontWeight: 'bold' }} to="/">
-          <h5>SIGHTWAY APP</h5>
+          <img
+            src="../../public/logo-monochrome.svg"
+            alt="Logo"
+            style={{ height: '30px', marginRight: '8px' }}
+          />
+          <h5 style={{ display: 'inline', margin: 0 }}>SIGHTWAY APP</h5>
         </CSidebarBrand>
       </CSidebarHeader>
 

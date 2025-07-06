@@ -1,5 +1,6 @@
 import React from 'react'
 
+const AppHistory = React.lazy(() => import('./views/Profile'))
 const Dashboard = React.lazy(() => import('./views/Dashboard'))
 const ManageCategory = React.lazy(() => import('./views/ManageCategory'))
 const ManageTag = React.lazy(() => import('./views/ManageTag'))
@@ -11,6 +12,7 @@ const Profile = React.lazy(() => import('./views/Profile'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home', element: Dashboard },
+  { path: '/app-history', name: 'App History', element: AppHistory, roles: ['superadmin'] },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/manage-category', name: 'Manage Category', element: ManageCategory },
   { path: '/manage-tag', name: 'Manage Tag', element: ManageTag },
