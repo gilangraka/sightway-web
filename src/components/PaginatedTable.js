@@ -131,13 +131,23 @@ const PaginatedTable = ({ columns, endpoint, perPage = 10, showSearch = true, re
               </tr>
             </thead>
             <tbody>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {extendedColumns.map((col, colIndex) => (
-                    <td key={colIndex}>{col.render ? col.render(row, rowIndex) : row[col.key]}</td>
-                  ))}
+              {data.length === 0 ? (
+                <tr>
+                  <td colSpan={extendedColumns.length} className="text-center">
+                    Tidak ada data tersedia
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                data.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {extendedColumns.map((col, colIndex) => (
+                      <td key={colIndex}>
+                        {col.render ? col.render(row, rowIndex) : row[col.key]}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </CTable>
 
