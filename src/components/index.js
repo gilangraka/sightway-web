@@ -13,6 +13,8 @@ import CenteredModal from './CenteredModal'
 import ToastManager from './ToastManager'
 import StatCard from './StatCard'
 import QuickLink from './QuickLink'
+import CategorySelect from './select/CategorySelect'
+import TagSelect from './select/TagSelect'
 
 export {
   AppBreadcrumb,
@@ -30,4 +32,6 @@ export {
   ToastManager,
   StatCard,
   QuickLink,
+  CategorySelect,
+  TagSelect,
 }

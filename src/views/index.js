@@ -7,6 +7,8 @@ import ManageTag from './ManageTag'
 import Dashboard from './Dashboard'
 import Login from './Login'
 import ManageAppHistory from './ManageAppHistory'
+import ManagePost from './ManagePost'
+import ManagePostAdd from './ManagePostAdd'
 
 export {
   ManageAdmin,
@@ -18,4 +20,6 @@ export {
   Dashboard,
   Login,
   ManageAppHistory,
+  ManagePost,
+  ManagePostAdd,
 }

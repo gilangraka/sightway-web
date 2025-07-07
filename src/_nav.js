@@ -82,12 +82,6 @@ const getNav = (roles = []) => {
       component: CNavTitle,
       name: 'Settings',
     },
-    {
-      component: CNavItem,
-      name: 'User Settings',
-      to: '/profile',
-      icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
-    },
 
     ...(roles.includes('superadmin')
       ? [
@@ -99,6 +93,13 @@ const getNav = (roles = []) => {
           },
         ]
       : []),
+
+    {
+      component: CNavItem,
+      name: 'User Settings',
+      to: '/profile',
+      icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
+    },
   ]
 
   return nav

@@ -9,6 +9,8 @@ const ManagePemantau = React.lazy(() => import('./views/ManagePemantau'))
 const ManagePenyandang = React.lazy(() => import('./views/ManagePenyandang'))
 const ManageBlindstick = React.lazy(() => import('./views/ManageBlindstick'))
 const Profile = React.lazy(() => import('./views/Profile'))
+const ManagePost = React.lazy(() => import('./views/ManagePost'))
+const ManagePostAdd = React.lazy(() => import('./views/ManagePostAdd'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home', element: Dashboard },
@@ -16,7 +18,8 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/manage-category', name: 'Manage Category', element: ManageCategory },
   { path: '/manage-tag', name: 'Manage Tag', element: ManageTag },
-  { path: '/manage-post', name: 'Manage Post', element: Dashboard },
+  { path: '/manage-post', name: 'Manage Post', element: ManagePost },
+  { path: '/manage-post/add', name: 'Manage Post', element: ManagePostAdd },
   { path: '/manage-admin', name: 'Manage Admin', element: ManageAdmin, roles: ['superadmin'] },
   { path: '/manage-pemantau', name: 'Manage Pemantau', element: ManagePemantau },
   { path: '/manage-penyandang', name: 'Manage Penyandang', element: ManagePenyandang },
