@@ -15,6 +15,7 @@ import StatCard from './StatCard'
 import QuickLink from './QuickLink'
 import CategorySelect from './select/CategorySelect'
 import TagSelect from './select/TagSelect'
+import ShowBlindstickModal from './modals/ShowBlindstickModal'
 
 export {
   AppBreadcrumb,
@@ -34,4 +35,5 @@ export {
   QuickLink,
   CategorySelect,
   TagSelect,
+  ShowBlindstickModal,
 }

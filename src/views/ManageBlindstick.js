@@ -1,5 +1,5 @@
 import { CButton, CCard, CCardBody } from '@coreui/react'
-import { PaginatedTable } from '../components'
+import { PaginatedTable, ShowBlindstickModal } from '../components'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import CrudModal from '../components/modals/CrudModal'
@@ -47,7 +47,13 @@ const ManageBlindstick = () => {
       label: 'Aksi',
       render: (item) => (
         <div className="d-flex align-items-center gap-2">
-          <ShowButton />
+          <ShowButton
+            onClick={() => {
+              setSelectedId(item.id)
+              setModalShowVisible(true)
+            }}
+          />
+
           <EditButton onClick={() => handleEdit(item.id)} />
           <DeleteButton onClick={() => handleDelete(item.id)} />
         </div>
@@ -124,6 +130,12 @@ const ManageBlindstick = () => {
         }}
         onSuccess={handleSuccess}
         onError={handleError}
+      />
+
+      <ShowBlindstickModal
+        visible={modalShowVisible}
+        onClose={() => setModalShowVisible(false)}
+        id={selectedId}
       />
     </>
   )

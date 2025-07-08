@@ -67,7 +67,7 @@ const ManagePost = () => {
       key: 'thumbnail',
       label: 'Thumbnail',
       render: (item) => (
-        <img width="300px" src={item.thumbnail} className="rounded" alt="Thumbnail" />
+        <img width="100px" src={item.thumbnail} className="rounded" alt="Thumbnail" />
       ),
     },
     { key: 'title', label: 'Judul Post' },
@@ -141,7 +141,7 @@ const ManagePost = () => {
                 <div className="d-flex gap-2">
                   <CButton
                     className="px-4 p-2"
-                    color="primary"
+                    color="light"
                     onClick={() => setModalShowVisible(false)}
                   >
                     Tutup

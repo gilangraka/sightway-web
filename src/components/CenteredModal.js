@@ -30,7 +30,8 @@ const CenteredModal = ({ visible, onClose, title, children, onSave, loading = fa
           Close
         </CButton>
         <CButton color="primary" onClick={onSave} disabled={loading}>
-          {loading ? <CSpinner size="sm" /> : 'Confirm'}
+          {loading && <CSpinner size="sm" className="me-2" />}
+          {loading ? 'Saving...' : 'Confirm'}
         </CButton>
       </CModalFooter>
     </CModal>
